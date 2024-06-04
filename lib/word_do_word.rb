@@ -1,8 +1,36 @@
-# frozen_string_literal: true
+# wordling/lib/wordling.rb
+require 'pathname'
+require 'set'
+require 'lemmatizer'
 
-require_relative "word_do_word/version"
+module Wordling
+  class Analyzer
+    def initialize(stop_words: [], lemmatization: false)
+      @stop_words = Set.new(stop_words)
+      @lemmatizer = Lemmatizer.new if lemmatization
+    end
 
-module WordDoWord
-  class Error < StandardError; end
-  # Your code goes here...
+    def analyze_folder(folder_path, filename_pattern = '*')
+      word_frequency = Hash.new(0)
+      folder = Pathname.new(folder_path)
+      folder.glob("**/#{filename_pattern}.txt").each do |file|
+        words = extract_words(file)
+        words.each do |word|
+          word_frequency[lemmatize(word.downcase)] += 1 unless @stop_words.include?(word.downcase)
+        end
+      end
+      word_frequency
+    end
+
+    private
+
+    def extract_words(file)
+      content = File.read(file)
+      content.downcase.scan(/\b\w+\b/)
+    end
+
+    def lemmatize(word)
+      @lemmatizer ? @lemmatizer.lemma(word) : word
+    end
+  end
 end

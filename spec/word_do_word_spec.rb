@@ -1,4 +1,4 @@
-require 'wordling'
+require 'word_do_word'
 
 RSpec.describe Wordling::Analyzer do
   describe '#analyze_folder' do

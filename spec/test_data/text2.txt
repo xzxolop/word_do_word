@@ -1,0 +1,2 @@
+The dog is barking at the cat.
+The cat is chasing the mouse.
